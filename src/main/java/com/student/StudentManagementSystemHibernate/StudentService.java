@@ -99,44 +99,36 @@ public class StudentService {
 
 	public void getStudentsByBranch() {
 
-    try (Scanner sc = new Scanner(System.in)) {
-		System.out.print("Enter branch: ");
-		String br = sc.nextLine().toLowerCase();   // convert input to lowercase
+		try (Scanner sc = new Scanner(System.in)) {
+			System.out.print("Enter branch: ");
+			String br = sc.nextLine().toLowerCase(); // convert input to lowercase
 
-		Session s = HibernateUtil.getSessionFactory().openSession();
+			Session s = HibernateUtil.getSessionFactory().openSession();
 
-		try {
-		    s.beginTransaction();
+			try {
+				s.beginTransaction();
 
-		    List<Student> list = s.createQuery(
-		            "from Student where lower(branch) = :b",
-		            Student.class)
-		            .setParameter("b", br)
-		            .getResultList();
+				List<Student> list = s.createQuery("from Student where lower(branch) = :b", Student.class)
+						.setParameter("b", br).getResultList();
 
-		    if (list.isEmpty()) {
-		        System.out.println("No such branch found");
-		    } else {
-		        for (Student st : list) {
-		            System.out.println(
-		                    st.getId() + " " +
-		                    st.getName() + " " +
-		                    st.getBranch()
-		            );
-		        }
-		    }
+				if (list.isEmpty()) {
+					System.out.println("No such branch found");
+				} else {
+					for (Student st : list) {
+						System.out.println(st.getId() + " " + st.getName() + " " + st.getBranch());
+					}
+				}
 
-		    s.getTransaction().commit();
+				s.getTransaction().commit();
 
-		} finally {
-		    s.close();
+			} finally {
+				s.close();
+			}
+		} catch (HibernateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-	} catch (HibernateException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	}
-}
-
 
 	public void insertStudent() {
 
@@ -189,6 +181,103 @@ public class StudentService {
 		} catch (Exception e) {
 			s.getTransaction().rollback();
 			e.printStackTrace();
+		} finally {
+			s.close();
+		}
+	}
+
+	public void updateMenu() {
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("1. Update Student Details");
+		System.out.println("2. Update Marks");
+		System.out.print("Enter choice: ");
+
+		int up = sc.nextInt();
+
+		switch (up) {
+
+		case 1:
+			updateStudentDetails();
+			break;
+
+		case 2:
+			updateStudentMarks();
+			break;
+
+		default:
+			System.out.println("Invalid update option");
+		}
+	}
+
+	private void updateStudentDetails() {
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.print("Enter student id: ");
+		int id = sc.nextInt();
+		sc.nextLine();
+
+		System.out.print("Enter new name: ");
+		String name = sc.nextLine();
+
+		System.out.print("Enter new branch: ");
+		String branch = sc.nextLine();
+
+		Session s = HibernateUtil.getSessionFactory().openSession();
+
+		try {
+			s.beginTransaction();
+
+			Student st = s.get(Student.class, id);
+
+			if (st != null) {
+				st.setName(name);
+				st.setBranch(branch);
+				System.out.println("Student updated successfully");
+			} else {
+				System.out.println("Student not found");
+			}
+
+			s.getTransaction().commit();
+		} finally {
+			s.close();
+		}
+	}
+
+	private void updateStudentMarks() {
+
+		Scanner sc = new Scanner(System.in);
+
+		System.out.print("Enter student id: ");
+		int id = sc.nextInt();
+
+		System.out.println("Enter new marks (java python mysql js):");
+		int java = sc.nextInt();
+		int python = sc.nextInt();
+		int mysql = sc.nextInt();
+		int js = sc.nextInt();
+
+		Session s = HibernateUtil.getSessionFactory().openSession();
+
+		try {
+			s.beginTransaction();
+
+			Student st = s.get(Student.class, id);
+
+			if (st != null) {
+				Marks m = st.getMarks();
+				m.setJava(java);
+				m.setPython(python);
+				m.setMysql(mysql);
+				m.setJs(js);
+				System.out.println("Marks updated successfully");
+			} else {
+				System.out.println("Student not found");
+			}
+
+			s.getTransaction().commit();
 		} finally {
 			s.close();
 		}

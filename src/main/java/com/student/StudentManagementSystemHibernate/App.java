@@ -11,57 +11,57 @@ public class App {
 
 		while (true) {
 
-			System.out.println();
-			
 			System.out.println("\n----- MENU -----");
-			System.out.println("1. Insert Student");
-			System.out.println("2. Delete Student");
-			System.out.println("3. Get All Students");
-			System.out.println("4. Get Top N Students");
-			System.out.println("5. Sort Students by Name");
-			System.out.println("6. Sort Students by Marks");
-			System.out.println("7. Get Students by Branch");
+			System.out.println("1. Insert Student"); // CREATE
+			System.out.println("2. Get All Students"); // READ
+			System.out.println("3. Get Top N Students"); // READ
+			System.out.println("4. Sort Students by Name"); // READ
+			System.out.println("5. Sort Students by Marks"); // READ
+			System.out.println("6. Get Students by Branch"); // READ
+			System.out.println("7. Update Student / Marks"); // UPDATE
+			System.out.println("8. Delete Student"); // DELETE
 			System.out.println("Any other number → Exit");
-			System.out.print("Enter choice: ");
 
-			System.out.println();
-			
+			System.out.print("Enter choice: ");
 			int ch = sc.nextInt();
 
 			switch (ch) {
 
-			case 1:
+			case 1: // CREATE
 				service.insertStudent();
 				break;
 
-			case 2:
-				System.out.print("Enter student id to delete: ");
-				int id = sc.nextInt();
-				service.deleteStudentById(id);
-				break;
-
-			case 3:
+			case 2: // READ
 				service.getAllStudents();
 				break;
 
-			case 4:
+			case 3: // READ
 				System.out.print("Enter N value: ");
 				int n = sc.nextInt();
 				service.getTopNStudents(n);
 				break;
 
-			case 5:
+			case 4: // READ
 				service.sortByName();
 				break;
 
-			case 6:
+			case 5: // READ
 				service.sortByMarksDesc();
 				break;
 
-			case 7:
-				System.out.print("Enter branch: ");
-				System.out.println("Available brances are CSE, ECE");
+			case 6: // READ
+				System.out.println("Available branches are CSE, ECE");
 				service.getStudentsByBranch();
+				break;
+
+			case 7: // UPDATE
+				service.updateMenu();
+				break;
+
+			case 8: // DELETE
+				System.out.print("Enter student id to delete: ");
+				int id = sc.nextInt();
+				service.deleteStudentById(id);
 				break;
 
 			default:
@@ -72,4 +72,5 @@ public class App {
 			}
 		}
 	}
+
 }
