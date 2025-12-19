@@ -3,6 +3,7 @@ package com.student.StudentManagementSystemHibernate;
 import java.util.List;
 import java.util.Scanner;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -98,39 +99,42 @@ public class StudentService {
 
 	public void getStudentsByBranch() {
 
-    Scanner sc = new Scanner(System.in);
+    try (Scanner sc = new Scanner(System.in)) {
+		System.out.print("Enter branch: ");
+		String br = sc.nextLine().toLowerCase();   // convert input to lowercase
 
-    System.out.print("Enter branch: ");
-    String br = sc.nextLine().toLowerCase();   // convert input to lowercase
+		Session s = HibernateUtil.getSessionFactory().openSession();
 
-    Session s = HibernateUtil.getSessionFactory().openSession();
+		try {
+		    s.beginTransaction();
 
-    try {
-        s.beginTransaction();
+		    List<Student> list = s.createQuery(
+		            "from Student where lower(branch) = :b",
+		            Student.class)
+		            .setParameter("b", br)
+		            .getResultList();
 
-        List<Student> list = s.createQuery(
-                "from Student where lower(branch) = :b",
-                Student.class)
-                .setParameter("b", br)
-                .getResultList();
+		    if (list.isEmpty()) {
+		        System.out.println("No such branch found");
+		    } else {
+		        for (Student st : list) {
+		            System.out.println(
+		                    st.getId() + " " +
+		                    st.getName() + " " +
+		                    st.getBranch()
+		            );
+		        }
+		    }
 
-        if (list.isEmpty()) {
-            System.out.println("No such branch found");
-        } else {
-            for (Student st : list) {
-                System.out.println(
-                        st.getId() + " " +
-                        st.getName() + " " +
-                        st.getBranch()
-                );
-            }
-        }
+		    s.getTransaction().commit();
 
-        s.getTransaction().commit();
-
-    } finally {
-        s.close();
-    }
+		} finally {
+		    s.close();
+		}
+	} catch (HibernateException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 }
 
 
